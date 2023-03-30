@@ -1,0 +1,14 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/vaffe/ros2_ws/build/my_robot_controller",
+        "/home/vaffe/ros2_ws/install/my_robot_controller/lib/python3.9/site-packages",
+        "/ros2_ws/humble/lib/python3.9/dist-packages",
+        "/opt/ros/humble/lib/python3.9/site-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/vaffe/ros2_ws/build/my_robot_controller",
+        "/home/vaffe/ros2_ws/install/my_robot_controller/lib/python3.9/site-packages",
+        "/ros2_ws/humble/lib/python3.9/dist-packages",
+        "/opt/ros/humble/lib/python3.9/site-packages"
+    ]
+}
