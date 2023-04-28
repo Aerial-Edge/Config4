@@ -1,31 +1,9 @@
-#!/usr/bin/etv python
-
-import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Image
-from std_msgs.msg import Int32MultiArray
-import cv2 as cv
-from cv_bridge import CvBridge
-import cvzone
-from cvzone.FPS import FPS
-import numpy as np
-import time
-import math
-import imutils
-
-
-class ObjectDetection(Node):
-    def __init__(self):
-        super().__init__('object_detection') # call the constructor of the parent class
-        self.subscription = self.create_subscription(Image, 'image_data', self.process_image, 10) # create a subscriber
-        self.bridge = CvBridge() # create a bridge between OpenCV and ROS
-        self.distance_and_position_publisher = self.create_publisher(Int32MultiArray, 'distance_and_pos', 10)
-
-
-
-    def process_image(self, msg): # callback function main processing function
+def process_image(self, msg): # callback function main processing function
         
         start_time = time.time()
+        self.get_logger().info("Frame Recived")
+        dist_and_pos = Int32MultiArray()  #Distance on[0] and x pos on[1] and y pos on[2]
+        dist_and_pos = [0,0,0]    
    
         # Function to calculate distance from the object based on its radius in pixels
         def kalkulerDistanse(ballRadius_px):
@@ -85,13 +63,13 @@ class ObjectDetection(Node):
         # Distance measurement parameters:
         ballRadius = 3.25   # cm (radius of the ball)
         cameraFOV = 62.2    # degrees (field of view of the camera)
-        faktor = (640 / 2) * (ballRadius / math.tan(math.radians(cameraFOV / 2)))
+        faktor = (1280 / 2) * (ballRadius / math.tan(math.radians(cameraFOV / 2)))
 
         # Color detection settings:
         colors = {
-             'green': {
-                'lower': (57, 45, 18), #(L-H, L-S, L-V)
-                'upper': (113, 191, 125), #(U-H,  U-S, u-V)
+            'green': {
+                'lower': (72, 70, 32), #(L-H, L-S, L-V)
+                'upper': (99, 244, 107), #(U-H,  U-S, u-V)
                 'min_radius': 0, #ex between 20 
                 'max_radius': 0, #to 60 pixels
                 'color': (0, 255, 0), #Color of the circle around object
@@ -150,24 +128,9 @@ class ObjectDetection(Node):
                 color_info['y'] = y
                 color_info['ballRadius_px'] = ballRadius_px
                 color_info['distance'] = dist
-                
+
+                display_object_info(opencv_image, color_info['x'], color_info['y'], color_info['ballRadius_px'],
+                                    color_info.get('distance'), color_info['color'], color_info['text_offset'])
         computaiton_time = time.time() - start_time
         self.get_logger().info("Time to compute: " + str(computaiton_time))
-
-    def publish_dist_and_pos(self, x, y, distance):
-        msg = Int32MultiArray()
-        msg.data = [int(x), int(y), int(distance)]
-        self.distance_and_position_publisher.publish(msg)
-
-def main(args=None): # args is a list of strings
-    rclpy.init(args=args) # initialize the ROS client library
-
-    node = ObjectDetection() # create a node
-
-    rclpy.spin(node) #  wait for messages
-    node.destroy_node() # destroy the node explicitly
-
-    rclpy.shutdown() # shutdown the ROS client library
-
-if __name__ == '__main__':
-    main()
+        cv.imshow("Frame", opencv_image)

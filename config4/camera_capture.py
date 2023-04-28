@@ -23,6 +23,7 @@ class CameraCapture(Node): # inherits from Node
        #     self.get_logger().info('Failed to read frame from camera')
        #     return
         msg = self.bridge.cv2_to_imgmsg(frame, encoding='bgr8') # convert the image to a ROS message
+        
 
         self.publisher_.publish(msg) # publish the message
 
