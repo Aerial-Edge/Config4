@@ -3,7 +3,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
-from std_msgs.msg import Float64
+from std_msgs.msg import Int32MultiArray
 import cv2
 from cv_bridge import CvBridge
 import cvzone
@@ -15,30 +15,30 @@ import time
 class ObjectDetection(Node):
     def __init__(self):
         super().__init__('object_detection') # call the constructor of the parent class
-        self.subscription = self.create_subscription(Image, 'image_data', self.process_image, 1) # create a subscriber
+        self.subscription = self.create_subscription(Image, 'image_data', self.process_image, 10) # create a subscriber
         self.bridge = CvBridge() # create a bridge between OpenCV and ROS
-        self.distance_publisher = self.create_publisher(Float64, 'distance', 1) # create a publisher
-        self.position_publisher = self.create_publisher(Float64, 'position', 1) # create a publisher
+        self.distance_and_position_publisher = self.create_publisher(Int32MultiArray, 'distance_and_pos', 10)
 
     def process_image(self, msg): # callback function main processing function
         start_time = time.time()
 
-        distance = 0.0 # create a message
-        position = 0.0 # create a message
+        distance = 0 # create a message
+        position = 0 # create a message
+
+        dist_and_pos =[0, 0, 0]  #Distance on[0] and x pos on[1] and y pos on[2]    
         
         myColorFinder = ColorFinder(False) # create a color finder object
-        hsvVals = {'hmin': 104, 'smin': 162, 'vmin': 60, 'hmax': 115, 'smax': 255, 'vmax': 255}
-
+        hsvVals = {'hmin': 72, 'smin': 25, 'vmin': 4, 'hmax': 144, 'smax': 170, 'vmax': 81}
         opencv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8') # convert the ROS message to an OpenCV image
 
         _, mask = myColorFinder.update(opencv_image, hsvVals)
         _, contours = cvzone.findContours(opencv_image, mask)
 
         if contours:
-            f = 535
-            W = 6.5
+            f = 474
+            W = 6.2
             w = np.sqrt(contours[0]['area']/np.pi) * 2
-            distance = (W * f) / w
+            dist_and_pos[0] = (W * f) / w
             #log distance
             self.get_logger().info(f"Distance: {distance:.3f}cm")
 
@@ -51,15 +51,11 @@ class ObjectDetection(Node):
         self.publish_object_distance(distance) # Publish the distance
         self.publish_object_position(position) # Publish the position
     
-    def publish_object_distance(self, distance): # callback function
-        msg = Float64() # create a message
-        msg.data = distance # fill in the message
-        self.distance_publisher.publish(msg) # publish the message
 
-    def publish_object_position(self, position): # callback function
-        msg = Float64() # create a message
-        msg.data = position # fill in the message
-        self.position_publisher.publish(msg) # publish the message
+    def publish_dist_and_pos(self, data):
+        msg = Int32MultiArray()
+        msg.data = data
+        self.distance_and_position_publisher.publish(msg)
 
 def main(args=None): # args is a list of strings
     rclpy.init(args=args) # initialize the ROS client library
