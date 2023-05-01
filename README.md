@@ -13,9 +13,6 @@ This image processing technique does computation on the pixels from the camera, 
   - [Option 2: Using Docker](#option-2-using-docker)
 - [Configuration](#configuration)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
 
 ## Prerequisites
 
@@ -51,15 +48,7 @@ We have 2 difference methods of installation. You can either install the depende
 2. Update the Raspberry Pi OS to the latest version:
     Make sure that you have the Pi Camera Module v3 attached to the Raspberry Pi 4 before updating the OS. (So that you download the drivers for the camera module)
 3. Install Ros2 Humble through this [link](https://github.com/Ar-Ray-code/rpi-bullseye-ros2.git)
-4. Install required librarys:
-
-    ```sh
-    pip install opencv-contrib-python # OpenCV
-    pip install cvzone # OpenCV helper library
-    pip install numpy # Numpy
-    pip install -U colcon-common-extensions # Colcon build tool for ROS2
-    ``` 
-5. Create your workspace:
+4. Create your workspace:
 
     ```sh
     mkdir -p ~/ros2_ws/src
@@ -68,8 +57,22 @@ We have 2 difference methods of installation. You can either install the depende
     source install/setup.bash
     ``` 
 
+5. Install required librarys:
 
-6. Clone the repository:
+    ```sh
+    pip install opencv-contrib-python # OpenCV
+    pip install cvzone # OpenCV helper library
+    pip install numpy # Numpy
+    pip install -U colcon-common-extensions # Colcon build tool for ROS2
+
+    cd ~/ros2_ws/src
+    git clone https://github.com/ros-perception/vision_opencv.git # OpenCV bridge for ROS2
+    cd ..
+    colcon build --packages-select vision_opencv
+    ``` 
+
+
+6. Clone the config4 repository:
 
     ```sh
     cd ~/ros2_ws/src
@@ -80,7 +83,7 @@ We have 2 difference methods of installation. You can either install the depende
 
     ```sh
     cd ~/ros2_ws
-    colcon build
+    colcon build --symlink-install
     source install/setup.bash
     ```
 
