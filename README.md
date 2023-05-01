@@ -48,7 +48,10 @@ We have 2 difference methods of installation. You can either install the depende
 2. Update the Raspberry Pi OS to the latest version:
     Make sure that you have the Pi Camera Module v3 attached to the Raspberry Pi 4 before updating the OS. (So that you download the drivers for the camera module)
 3. Install Ros2 Humble through this [link](https://github.com/Ar-Ray-code/rpi-bullseye-ros2.git)
-4. 
+4. Install required librarys:
+    ```sh
+    pip install opencv-contrib-python
+    ```
 
     
 
