@@ -28,41 +28,16 @@ class ObjectDetection(Node):
         start_time = time.time()
    
         # Function to calculate distance from the object based on its radius in pixels
-        def kalkulerDistanse(ballRadius_px):
+        def calculateDistance(ballRadius_px):
             return int(faktor / ballRadius_px)
-        
-        def display_object_info(frame, x, y, radius, distance, color, text_offset):
-            if x is not None and y is not None:
-                # Draw a circle around the detected object
-                cv.circle(frame, (x, y), radius, color, 2)
-                
-                # Prepare the coordinate text
-                coordinates_text = f"X: {x}, Y: {y}"
-                
-                # Prepare the distance text
-                distance_text = f"Distance: {distance} cm"
-                
-                # Put the coordinate text on the frame
-                cv.putText(frame, coordinates_text, (x + 10, y), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-                
-                # Put the distance text on the frame
-                cv.putText(frame, distance_text, (22, 70 + text_offset), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
         # Function to detect a colored object within a given color range and size
         def detect_colored_object(colorLower, colorUpper, min_radius, max_radius):
             
-            # Create a mask based on the given color range
-            mask = cv.inRange(hsv, colorLower, colorUpper)
-            
-            # Erode the mask to remove noise
-            mask = cv.erode(mask, None, iterations=2)
-            
-            # Dilate the mask to fill gaps
-            mask = cv.dilate(mask, None, iterations=2)
-
-            # Convert the frame to grayscale and apply median blur
             gray = cv.cvtColor(opencv_image, cv.COLOR_BGR2GRAY)
             gray = cv.medianBlur(gray, 5)
+            mask = cv.erode(gray, None, iterations=2)
+            mask = cv.dilate(mask, None, iterations=2)
             
             # Detect circles using the Hough transform
             circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 20, param1=100, param2=30,
@@ -139,7 +114,7 @@ class ObjectDetection(Node):
 
             if obj: # If an object is detected
                 x, y, ballRadius_px = obj # Get the coordinates and radius of the object
-                dist = kalkulerDistanse(ballRadius_px) # Calculate the distance to the object
+                dist = calculateDistance(ballRadius_px) # Calculate the distance to the object
                 #self.get_logger().info(f" FPS : {fps}")
 
                 self.publish_dist_and_pos(x, y, dist)
