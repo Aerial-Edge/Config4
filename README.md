@@ -11,8 +11,7 @@ This image processing technique does computation on the pixels from the camera, 
 - [Installation](#installation)
   - [Option 1: Manual Installation](#option-1-manual-installation)
   - [Option 2: Using Docker](#option-2-using-docker)
-- [Configuration](#configuration)
-- [Usage](#usage)
+- [Software Reasoning](#Software-Reasoning)
 
 ## Prerequisites
 
@@ -98,4 +97,23 @@ We have 2 difference methods of installation. You can either install the depende
 
 1. Attach the Raspberry Pi Camera Module v3 to the Raspberry Pi 4.
     
+
+## Software Reasoning
+
+### OpenCV
+
+We have not tried other alternatives to OpenCV due how well it works. OpenCV is a very well documented library, and is very easy to use. It is also very fast, and can run on the Raspberry Pi 4 without any problems. OpenCV is also very well supported by the ROS2 community, and therefor it is easy to integrate with ROS2.
+
+### ROS2
+
+ROS2 was chosen due to wishes from our customer, and because it is a very well documented and supported framework. ROS2 is also very easy to use, and is very well supported by the community. ROS2 is also easy to integrate with OpenCV, and is therefor a good choice for this configuration.
+
+### cvzone
+
+cvzone is a helper library for OpenCV. We chose to use this library due to how easy it made it to draw bounding boxes around the objects we detected. It also made it simpler to draw text on the screen, and to draw the FPS counter. It is also very well documented, and is easy to use.
+
+### Python
+
+We chose to use Python due to how easy it is to use, and how well it works with OpenCV and ROS2.
+
 
