@@ -130,6 +130,6 @@ We chose to use Python due to how easy it is to use, and how well it works with 
 ## References
 
 - [OpenCV](https://opencv.org/)
-- [ROS2](https://docs.ros.org/en/galactic/index.html)
+- [ROS2](https://docs.ros.org/en/humble/index.html)
 - [cvzone](https://github.com/cvzone/cvzone)
 - [VS Code](https://code.visualstudio.com/)
