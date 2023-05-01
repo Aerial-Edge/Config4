@@ -14,12 +14,11 @@ import time
 
 class ObjectDetection(Node):
     def __init__(self):
-        super().__init__('object_detection') # call the constructor of the parent class
-        self.subscription = self.create_subscription(Image, 'image_data', self.process_image, 1) # create a subscriber
+        super().__init__('object_detection')
+        self.subscription = self.create_subscription(Image, 'image_data', self.process_image, 1) 
         self.bridge = CvBridge() # create a bridge between OpenCV and ROS
-        self.distance_publisher = self.create_publisher(Float64, 'distance', 1) # create a publisher
-        self.position_publisher = self.create_publisher(Float64, 'position', 1) # create a publisher
-
+        self.distance_publisher = self.create_publisher(Float64, 'distance', 1) 
+        self.position_publisher = self.create_publisher(Float64, 'position', 1) 
     def process_image(self, msg): # callback function main processing function
         start_time = time.time()
 
@@ -27,29 +26,38 @@ class ObjectDetection(Node):
         position = 0.0 # create a message
         
         myColorFinder = ColorFinder(False) # create a color finder object
-        hsvVals = {'hmin': 104, 'smin': 162, 'vmin': 60, 'hmax': 115, 'smax': 255, 'vmax': 255}
+        hsvVals = {'hmin': 45, 'smin': 67, 'vmin': 21, 'hmax': 99, 'smax': 155, 'vmax': 211}
 
         opencv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8') # convert the ROS message to an OpenCV image
 
-        _, mask = myColorFinder.update(opencv_image, hsvVals)
-        _, contours = cvzone.findContours(opencv_image, mask)
+        imgColor, mask = myColorFinder.update(opencv_image, hsvVals)
+        imgContours, contours = cvzone.findContours(opencv_image, mask)
 
-        if contours:
-            f = 535
+        circular_contours = [cnt for cnt in contours if is_circle(cnt['cnt'])]
+
+        if circular_contours:
+            cnt = circular_contours[0]
+            data = cnt['center'][0], h - cnt['center'][1], int(cnt['area'])
+
+            f = 474
             W = 6.5
-            w = np.sqrt(contours[0]['area']/np.pi) * 2
-            distance = (W * f) / w
-            #log distance
-            self.get_logger().info(f"Distance: {distance:.3f}cm")
+            w = np.sqrt(cnt['area'] / np.pi) * 2
+            d = (W * f) / w
+            self.get_logger().info('Distance: %f' % d)
 
         processing_time = time.time() - start_time
-        desired_fps = 1/30
-
-        if processing_time > desired_fps:
-            self.get_logger().warning(f"Processing time exceeded desired time: {processing_time:.3f}s > {desired_fps:.3f}s")
+        self.get_logger().info('Processing time: %f' % processing_time)
 
         self.publish_object_distance(distance) # Publish the distance
         self.publish_object_position(position) # Publish the position
+
+        def is_circle(cnt, threshold=0.65):
+            area = cv2.contourArea(cnt)
+            perimeter = cv2.arcLength(cnt, True)
+            if perimeter == 0:
+                return False
+            circularity = 4 * np.pi * area / (perimeter * perimeter)
+            return circularity >= threshold
     
     def publish_object_distance(self, distance): # callback function
         msg = Float64() # create a message
