@@ -66,7 +66,7 @@ We have 2 difference methods of installation. You can either install the depende
     pip install -U colcon-common-extensions # Colcon build tool for ROS2
 
     cd ~/ros2_ws/src
-    git clone https://github.com/ros-perception/vision_opencv.git # OpenCV bridge for ROS2
+    git clone https://github.com/ros-perception/vision_opencv.git --branch humble # OpenCV bridge for ROS2
     cd ..
     colcon build --packages-select vision_opencv
     ``` 
