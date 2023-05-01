@@ -35,7 +35,10 @@ The reason for choosing the Raspberry Pi OS is due to the newly released Camera 
 
 ### Software
 
-Dependencies will be under the installation section.
+- Docker (Optional)
+- Python 3.8 or newer
+- OpenCV 4.7.0
+- ROS2 Humble
 
 
 ## Installation
@@ -49,11 +52,47 @@ We have 2 difference methods of installation. You can either install the depende
     Make sure that you have the Pi Camera Module v3 attached to the Raspberry Pi 4 before updating the OS. (So that you download the drivers for the camera module)
 3. Install Ros2 Humble through this [link](https://github.com/Ar-Ray-code/rpi-bullseye-ros2.git)
 4. Install required librarys:
+
     ```sh
-    pip install opencv-contrib-python
+    pip install opencv-contrib-python # OpenCV
+    pip install cvzone # OpenCV helper library
+    pip install numpy # Numpy
+    pip install -U colcon-common-extensions # Colcon build tool for ROS2
+    ``` 
+5. Create your workspace:
+
+    ```sh
+    mkdir -p ~/ros2_ws/src
+    cd ~/ros2_ws
+    colcon build
+    source install/setup.bash
+    ``` 
+
+
+6. Clone the repository:
+
+    ```sh
+    cd ~/ros2_ws/src
+    git clone https://github.com/Aerial-Edge/Config4.git --branch master
+    ```
+    
+7. Build the workspace:
+
+    ```sh
+    cd ~/ros2_ws
+    colcon build
+    source install/setup.bash
     ```
 
-    
+8. Run the ros2 nodes:
 
+    ```sh
+    ros2 run config4 camera_capture
+    ros2 run config4 object_detection
+    ```
+
+### Option 2: Using Docker
+
+1. Attach the Raspberry Pi Camera Module v3 to the Raspberry Pi 4.
     
 
