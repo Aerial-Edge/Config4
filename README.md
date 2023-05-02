@@ -18,7 +18,7 @@ This image processing technique does computation on the pixels from the camera, 
 
 ### OS
 
-- Raspberry Pi OS - Bullseye (2023-02-21)
+- Raspberry Pi OS - Bullseye 64bit (2023-02-21)
 
 Make sure you use the latest version of the Raspberry Pi OS. You can download the latest version from the official Raspberry Pi website: https://www.raspberrypi.org/software/operating-systems/
 
