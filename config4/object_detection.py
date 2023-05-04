@@ -58,6 +58,7 @@ class ObjectDetection(Node):
             if circular_contours_list:
                 cnt = circular_contours_list[0]
                 #data = cnt['center'][0], h - cnt['center'][1], int(cnt['area'])
+                x, y = cnt['center']
 
                 f = 474
                 W = 6.5
