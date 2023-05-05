@@ -21,7 +21,7 @@ class ObjectDetection(Node):
         self.fpsreader = FPS() # Initialize FPS reader
         self.distance_and_position_publisher = self.create_publisher(Int32MultiArray, 'distance_and_pos', 10)
 
-    def is_circle(self, cnt, threshold=0.6):
+    def is_circle(self, cnt, threshold=0.7):
             area = cv2.contourArea(cnt)
             perimeter = cv2.arcLength(cnt, True)
             if perimeter == 0:
@@ -39,8 +39,8 @@ class ObjectDetection(Node):
         h, w, _ = opencv_image.shape
 
         myColorFinder: ColorFinder = ColorFinder(False)
-        hsvValsBlue = {'hmin': 105, 'smin': 168, 'vmin': 119, 'hmax': 111, 'smax': 255, 'vmax': 255} #blue
-        hsvValsGreen = {'hmin': 76, 'smin': 29, 'vmin': 132, 'hmax': 97, 'smax': 124, 'vmax': 255} #grønn
+        hsvValsBlue = {'hmin': 104, 'smin': 128, 'vmin': 0, 'hmax': 120, 'smax': 255, 'vmax': 152} #blue
+        hsvValsGreen = {'hmin': 43, 'smin': 81, 'vmin': 29, 'hmax': 81, 'smax': 221, 'vmax': 227} #grønn
         hsvValsOrange = {'hmin': 0, 'smin': 120, 'vmin': 120, 'hmax': 20, 'smax': 255, 'vmax': 255} #orange
 
         fps, img = self.fpsreader.update(opencv_image)
@@ -67,9 +67,9 @@ class ObjectDetection(Node):
                 #data = cnt['center'][0], h - cnt['center'][1], int(cnt['area'])
                 x, y = cnt['center']
 
-                f = 474
+                f = 889
                 W = 6.5
-                w = np.sqrt(cnt['area'] / np.pi) * 2
+                w = cnt['bbox'][3]
                 d = (W * f) / w
                 self.get_logger().info(f"{color}: {d}")
                 self.get_logger().info(f" fps: {fps}")

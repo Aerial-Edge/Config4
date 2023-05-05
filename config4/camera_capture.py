@@ -6,6 +6,7 @@ from sensor_msgs.msg import Image # import the Image message type
 import cv2
 from cv_bridge import CvBridge
 from picamera2 import Picamera2
+from libcamera import controls
 
 class CameraCapture(Node): # inherits from Node
     def __init__(self): # constructor
@@ -14,6 +15,7 @@ class CameraCapture(Node): # inherits from Node
         self.timer = self.create_timer(1/30, self.publish_image_data) # create a timer
         self.opencv_video = Picamera2() # open the video capture device
         self.opencv_video.configure(self.opencv_video.create_preview_configuration(main={"format": 'RGB888', "size": (640, 480)}))
+        self.opencv_video.set_controls({"AwbEnable": True})
         self.opencv_video.start() 
         self.bridge = CvBridge() # create a bridge between OpenCV and ROS
 

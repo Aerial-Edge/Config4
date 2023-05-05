@@ -1,0 +1,26 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/vaffe/ros2_ws/build/opencv_tests",
+        "/home/vaffe/ros2_ws/install/opencv_tests/lib/python3.9/site-packages",
+        "/home/vaffe/ros2_ws/build/my_robot_controller",
+        "/home/vaffe/ros2_ws/install/my_robot_controller/lib/python3.9/site-packages",
+        "/home/vaffe/ros2_ws/install/image_geometry/lib/python3.9/site-packages",
+        "/home/vaffe/ros2_ws/build/config4",
+        "/home/vaffe/ros2_ws/install/config4/lib/python3.9/site-packages",
+        "/home/vaffe/ros2_ws/install/cv_bridge/lib/python3.9/site-packages",
+        "/ros2_ws/humble/lib/python3.9/dist-packages",
+        "/opt/ros/humble/lib/python3.9/site-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/vaffe/ros2_ws/build/opencv_tests",
+        "/home/vaffe/ros2_ws/install/opencv_tests/lib/python3.9/site-packages",
+        "/home/vaffe/ros2_ws/build/my_robot_controller",
+        "/home/vaffe/ros2_ws/install/my_robot_controller/lib/python3.9/site-packages",
+        "/home/vaffe/ros2_ws/install/image_geometry/lib/python3.9/site-packages",
+        "/home/vaffe/ros2_ws/build/config4",
+        "/home/vaffe/ros2_ws/install/config4/lib/python3.9/site-packages",
+        "/home/vaffe/ros2_ws/install/cv_bridge/lib/python3.9/site-packages",
+        "/ros2_ws/humble/lib/python3.9/dist-packages",
+        "/opt/ros/humble/lib/python3.9/site-packages"
+    ]
+}
