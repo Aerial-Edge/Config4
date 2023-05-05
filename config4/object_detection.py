@@ -21,6 +21,13 @@ class ObjectDetection(Node):
         self.fpsreader = FPS() # Initialize FPS reader
         self.distance_and_position_publisher = self.create_publisher(Int32MultiArray, 'distance_and_pos', 10)
 
+    def is_circle(self, cnt, threshold=0.6):
+            area = cv2.contourArea(cnt)
+            perimeter = cv2.arcLength(cnt, True)
+            if perimeter == 0:
+                return False
+            circularity = 4 * np.pi * area / (perimeter * perimeter)
+            return circularity >= threshold
 
 
     def process_image(self, msg): # callback function main processing function
@@ -48,9 +55,9 @@ class ObjectDetection(Node):
         _, contoursOrange = cvzone.findContours(img, maskOrange)
 
         # Filter contours that are circles
-        circular_contours_blue = [cnt for cnt in contours if is_circle(cnt['cnt'])]
-        circular_contours_green = [cnt for cnt in contoursRed if is_circle(cnt['cnt'])]
-        circular_contours_orange = [cnt for cnt in contoursOrange if is_circle(cnt['cnt'])]
+        circular_contours_blue = [cnt for cnt in contours if self.is_circle(cnt['cnt'])]
+        circular_contours_green = [cnt for cnt in contoursRed if self.is_circle(cnt['cnt'])]
+        circular_contours_orange = [cnt for cnt in contoursOrange if self.is_circle(cnt['cnt'])]
 
         # Process and display depth, x, and y position for each ball
         for color, circular_contours_list in zip(['blue', 'green', 'orange'],
@@ -68,14 +75,6 @@ class ObjectDetection(Node):
                 self.get_logger().info(f" fps: {fps}")
 
                 self.publish_dist_and_pos(x , y, d)
-
-        def is_circle(cnt, threshold=0.6):
-            area = cv2.contourArea(cnt)
-            perimeter = cv2.arcLength(cnt, True)
-            if perimeter == 0:
-                return False
-            circularity = 4 * np.pi * area / (perimeter * perimeter)
-            return circularity >= threshold
         
         
         computaiton_time = time.time() - start_time
