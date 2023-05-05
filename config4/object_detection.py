@@ -73,6 +73,7 @@ class ObjectDetection(Node):
                 d = (W * f) / w
                 self.get_logger().info(f"{color}: {d}")
                 self.get_logger().info(f" fps: {fps}")
+                self.get_logger().info(f" x: {x} y: {y}")
 
                 self.publish_dist_and_pos(x , y, d)
         
