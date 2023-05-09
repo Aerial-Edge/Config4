@@ -12,8 +12,7 @@ from cvzone.ColorModule import ColorFinder
 import numpy as np
 import time
 import math
-import xml.etree.ElementTree as ET
-import os
+
 
 
 class ObjectDetection(Node):
