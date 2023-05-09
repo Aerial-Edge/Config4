@@ -12,6 +12,9 @@ from cvzone.ColorModule import ColorFinder
 import numpy as np
 import time
 import math
+import xml.etree.ElementTree as ET
+import os
+
 
 class ObjectDetection(Node):
     def __init__(self):
@@ -21,6 +24,7 @@ class ObjectDetection(Node):
         self.fpsreader = FPS() # Initialize FPS reader
         self.distance_and_position_publisher = self.create_publisher(Int32MultiArray, 'distance_and_pos', 10)
 
+
     def is_circle(self, cnt, threshold=0.7):
             area = cv2.contourArea(cnt)
             perimeter = cv2.arcLength(cnt, True)
@@ -28,6 +32,7 @@ class ObjectDetection(Node):
                 return False
             circularity = 4 * np.pi * area / (perimeter * perimeter)
             return circularity >= threshold
+    
 
 
     def process_image(self, msg): # callback function main processing function
@@ -40,29 +45,30 @@ class ObjectDetection(Node):
 
         myColorFinder: ColorFinder = ColorFinder(False)
         hsvValsBlue = {'hmin': 104, 'smin': 128, 'vmin': 0, 'hmax': 120, 'smax': 255, 'vmax': 152} #blue
-        hsvValsGreen = {'hmin': 43, 'smin': 81, 'vmin': 29, 'hmax': 81, 'smax': 221, 'vmax': 227} #grønn
-        hsvValsOrange = {'hmin': 0, 'smin': 120, 'vmin': 120, 'hmax': 20, 'smax': 255, 'vmax': 255} #orange
+        hsvValsGreen = {'hmin': 75, 'smin': 34, 'vmin': 22, 'hmax': 103, 'smax': 175, 'vmax': 255} #green
+        hsvValsRed = {'hmin': 0, 'smin': 120, 'vmin': 120, 'hmax': 20, 'smax': 255, 'vmax': 255} #red
 
         fps, img = self.fpsreader.update(opencv_image)
 
-        _, mask = myColorFinder.update(img, hsvValsBlue)
-        _, maskRed = myColorFinder.update(img, hsvValsGreen)
-        _, maskOrange = myColorFinder.update(img, hsvValsOrange)
+        _, maskBlue = myColorFinder.update(img, hsvValsBlue)
+        _, maskGreen = myColorFinder.update(img, hsvValsGreen)
+        _, maskRed = myColorFinder.update(img, hsvValsRed)
 
 
-        _, contours = cvzone.findContours(img, mask)
+        _, contoursBlue = cvzone.findContours(img, maskBlue)
+        _, contoursGreen = cvzone.findContours(img, maskGreen)
         _, contoursRed = cvzone.findContours(img, maskRed)
-        _, contoursOrange = cvzone.findContours(img, maskOrange)
 
         # Filter contours that are circles
-        circular_contours_blue = [cnt for cnt in contours if self.is_circle(cnt['cnt'])]
-        circular_contours_green = [cnt for cnt in contoursRed if self.is_circle(cnt['cnt'])]
-        circular_contours_orange = [cnt for cnt in contoursOrange if self.is_circle(cnt['cnt'])]
+        circular_contours_blue = [cnt for cnt in contoursBlue if self.is_circle(cnt['cnt'])]
+        circular_contours_green = [cnt for cnt in contoursGreen if self.is_circle(cnt['cnt'])]
+        circular_contours_red = [cnt for cnt in contoursRed if self.is_circle(cnt['cnt'])]
 
         # Process and display depth, x, and y position for each ball
-        for color, circular_contours_list in zip(['blue', 'green', 'orange'],
-                                                [circular_contours_blue, circular_contours_green, circular_contours_orange]):
+        for color, circular_contours_list in zip(['blue', 'green', 'red'],
+                                                [circular_contours_blue, circular_contours_green, circular_contours_red]):
             if circular_contours_list:
+
                 cnt = circular_contours_list[0]
                 #data = cnt['center'][0], h - cnt['center'][1], int(cnt['area'])
                 x, y = cnt['center']
@@ -76,7 +82,6 @@ class ObjectDetection(Node):
                 self.get_logger().info(f" x: {x} y: {y}")
 
                 self.publish_dist_and_pos(x , y, d)
-        
         
         computaiton_time = time.time() - start_time
         self.get_logger().info("Time to compute: " + str(computaiton_time))
