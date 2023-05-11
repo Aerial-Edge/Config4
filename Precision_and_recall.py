@@ -2,13 +2,11 @@ import cv2                      # Import OpenCV package for image processing
 import cvzone                   # Import cvzone package for additional image processing capabilities
 from cvzone.ColorModule import ColorFinder  # Import ColorFinder module from cvzone package for color detection
 from cvzone.FPS import FPS       # Import FPS module from cvzone package for calculating frames per second
-import time                     # Import time package for time operations
 import numpy as np              # Import numpy package for numerical operations
-import math
-from picamera2 import Picamera2
-from libcamera import controls
 import xml.etree.ElementTree as ET
 import os
+import csv
+
 
 def is_circle(cnt, threshold=0.6):
     area = cv2.contourArea(cnt)
@@ -47,8 +45,9 @@ def read_image(image_file):
 def detect_color(image):
     # Define color range for detection
     myColorFinder = ColorFinder(False)
-    hsvVals = {'hmin': 49, 'smin': 69, 'vmin': 17, 'hmax': 108, 'smax': 255, 'vmax': 181}
-
+    #hsvVals = {'hmin': 49, 'smin': 69, 'vmin': 17, 'hmax': 108, 'smax': 255, 'vmax': 181} #green
+    #hsvVals = {'hmin': 0, 'smin': 42, 'vmin': 0, 'hmax': 20, 'smax': 186, 'vmax': 219} #red
+    hsvVals = {'hmin': 87, 'smin': 78, 'vmin': 0, 'hmax': 114, 'smax': 195, 'vmax': 174} #blue
     imgColor, mask = myColorFinder.update(image, hsvVals)
     imgContour, contours = cvzone.findContours(image, mask)
 
@@ -58,7 +57,7 @@ def detect_color(image):
     if circular_contours:
         for cnt in circular_contours:
             x, y, w, h = cv2.boundingRect(cnt['cnt'])
-            results.append(('green', (x, y, x+w, y+h)))  # replace 'green' with the actual color name
+            results.append(('blue', (x, y, x+w, y+h)))  # replace 'green' with the actual color name
     return results
 
 def calculate_iou(box1, box2):
@@ -67,16 +66,17 @@ def calculate_iou(box1, box2):
 
     xi1 = max(x1, x2)
     yi1 = max(y1, y2)
-    xi2 = min(x1+w1, x2+w2)
-    yi2 = min(y1+h1, y2+h2)
+    xi2 = min(x1 + w1, x2 + w2)
+    yi2 = min(y1 + h1, y2 + h2)
 
     inter_area = max(xi2 - xi1, 0) * max(yi2 - yi1, 0)
 
-    box1_area = (w1 - x1) * (h1 - y1)
-    box2_area = (w2 - x2) * (h2 - y2)
+    box1_area = w1 * h1
+    box2_area = w2 * h2
     union_area = box1_area + box2_area - inter_area
 
     return inter_area / union_area if union_area > 0 else 0
+
 
 def calculate_precision_recall(predictions, ground_truth, iou_threshold=0.5):
     TP = FP = FN = 0
@@ -111,14 +111,17 @@ def calculate_precision_recall(predictions, ground_truth, iou_threshold=0.5):
 
 
 # Replace with the path to your dataset
-image_dir = '/home/vaffe/RandomStuff/dataset/greenball/'
-label_dir = '/home/vaffe/RandomStuff/dataset/greenball/labels/'
+image_dir = '/home/vaffe/RandomStuff/dataset/valid/blue/'
+label_dir = '/home/vaffe/RandomStuff/dataset/valid/blue/labels/'
 
 image_files = sorted(os.listdir(image_dir))
 label_files = sorted(os.listdir(label_dir))
 
 predictions = []
 ground_truths = []
+
+precision_values = [] # list to store precision values
+recall_values = [] # list to store recall values
 
 for image_file, label_file in zip(image_files, label_files):
     image_path = os.path.join(image_dir, image_file)
@@ -132,10 +135,14 @@ for image_file, label_file in zip(image_files, label_files):
     predictions.append(prediction)
     ground_truths.append(label)
 
+    print('Predicted: ', prediction)
+    print('Ground Truth: ', label)
+
+
+
 precision, recall = calculate_precision_recall(predictions, ground_truths)
 f1_score = calculate_f1_score(precision, recall)
 
 print('Precision: ', precision)
 print('Recall: ', recall)
 print('F1 Score: ', f1_score)
-
