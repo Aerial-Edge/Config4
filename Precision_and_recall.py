@@ -146,3 +146,6 @@ f1_score = calculate_f1_score(precision, recall)
 print('Precision: ', precision)
 print('Recall: ', recall)
 print('F1 Score: ', f1_score)
+
+#Best HSV Values:  {'hmin': 36, 'smin': 100, 'vmin': 62, 'hmax': 90, 'smax': 255, 'vmax': 255} #green
+#Best F1 Score:  0.39999999999999997
