@@ -24,7 +24,7 @@ class ObjectDetection(Node):
         self.distance_and_position_publisher = self.create_publisher(Int32MultiArray, 'distance_and_pos', 10)
 
 
-    def is_circle(self, cnt, threshold=0.7):
+    def is_circle(self, cnt, threshold=0.75):
             area = cv2.contourArea(cnt)
             perimeter = cv2.arcLength(cnt, True)
             if perimeter == 0:
@@ -44,7 +44,7 @@ class ObjectDetection(Node):
 
         myColorFinder: ColorFinder = ColorFinder(False)
         hsvValsBlue = {'hmin': 104, 'smin': 128, 'vmin': 0, 'hmax': 120, 'smax': 255, 'vmax': 152} #blue
-        hsvValsGreen = {'hmin': 75, 'smin': 34, 'vmin': 22, 'hmax': 103, 'smax': 175, 'vmax': 255} #green
+        hsvValsGreen = {'hmin': 26, 'smin': 54, 'vmin': 48, 'hmax': 90, 'smax': 137, 'vmax': 255} #green
         hsvValsRed = {'hmin': 0, 'smin': 120, 'vmin': 120, 'hmax': 20, 'smax': 255, 'vmax': 255} #red
 
         fps, img = self.fpsreader.update(opencv_image)
