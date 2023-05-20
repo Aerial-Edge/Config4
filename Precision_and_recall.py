@@ -45,9 +45,9 @@ def read_image(image_file):
 def detect_color(image):
     # Define color range for detection
     myColorFinder = ColorFinder(False)
-    #hsvVals = {'hmin': 49, 'smin': 69, 'vmin': 17, 'hmax': 108, 'smax': 255, 'vmax': 181} #green
+    hsvVals = {'hmin': 36, 'smin': 100, 'vmin': 62, 'hmax': 90, 'smax': 255, 'vmax': 255} #green
     #hsvVals = {'hmin': 0, 'smin': 42, 'vmin': 0, 'hmax': 20, 'smax': 186, 'vmax': 219} #red
-    hsvVals = {'hmin': 87, 'smin': 78, 'vmin': 0, 'hmax': 114, 'smax': 195, 'vmax': 174} #blue
+    #hsvVals = {'hmin': 87, 'smin': 78, 'vmin': 0, 'hmax': 114, 'smax': 195, 'vmax': 174} #blue
     imgColor, mask = myColorFinder.update(image, hsvVals)
     imgContour, contours = cvzone.findContours(image, mask)
 
@@ -57,7 +57,7 @@ def detect_color(image):
     if circular_contours:
         for cnt in circular_contours:
             x, y, w, h = cv2.boundingRect(cnt['cnt'])
-            results.append(('blue', (x, y, x+w, y+h)))  # replace 'green' with the actual color name
+            results.append(('green', (x, y, x+w, y+h)))  # replace 'green' with the actual color name
     return results
 
 def calculate_iou(box1, box2):
@@ -111,8 +111,8 @@ def calculate_precision_recall(predictions, ground_truth, iou_threshold=0.5):
 
 
 # Replace with the path to your dataset
-image_dir = '/home/vaffe/RandomStuff/dataset/valid/blue/'
-label_dir = '/home/vaffe/RandomStuff/dataset/valid/blue/labels/'
+image_dir = '/home/vaffe/Pictures/ball/valid'
+label_dir = '/home/vaffe/Pictures/ball/valid/labels'
 
 image_files = sorted(os.listdir(image_dir))
 label_files = sorted(os.listdir(label_dir))
